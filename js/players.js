@@ -49,7 +49,7 @@ const FORMATIONS = {
     "3-4-3": [[50, 89], [10, 46], [24, 70], [76, 70], [90, 46], [37, 43], [50, 72], [63, 43], [20, 18], [50, 14], [80, 18]]
 };
 
-/* النسخة الإنجليزية: [الاسم، المركز، النادي] (راجع الأسماء والأندية) */
+/* النسخة الإنجليزية: [الاسم، المركز، النادي] */
 const EN = {
     "alersan.jpg": ["Ahmad Ersan", "Left winger", "Al-Faisaly"],
     "olwan.jpg": ["Ali Olwan", "Striker", "Al-Sailiya (Qatar)"],
@@ -73,3 +73,65 @@ const EN = {
     "bani-atiah.jpg": ["Noor Bani Attiah", "Goalkeeper", "Al-Faisaly"],
     "abo-lila.jpg": ["Yazeed Abu Laila", "Goalkeeper", "Al-Hussein (Irbid)"]
 };
+
+// تبديل حسام أبو الذهب ونزار الرشدان تلقائياً فقط عند تغير اللاعب الفعلي
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".seg button");
+    if (!btn) return;
+
+    const formation = btn.dataset.f;
+    const nizarIndex = 8;  // نزار الرشدان في SQUAD
+    const husamIndex = 14; // حسام أبو الذهب في SQUAD
+
+    const targetIndex = (formation === "3-4-3") ? husamIndex : nizarIndex;
+    const benchIndex = (formation === "3-4-3") ? nizarIndex : husamIndex;
+
+    const pitchPin = document.querySelector('.pin[data-slot="6"]');
+    if (!pitchPin) return;
+
+    // شرط مخصص: إذا كان اللاعب الحالي بالملعب هو نفسه المطلوب، لا تُنفّذ أي تبديل أو أنيميشن
+    if (parseInt(pitchPin.dataset.i) === targetIndex) {
+        return;
+    }
+
+    const targetPlayer = SQUAD[targetIndex];
+    const benchPlayer = SQUAD[benchIndex];
+    const benchSub = document.querySelector(`.sub[data-i="${targetIndex}"]`) || document.querySelector(`.sub[data-i="${benchIndex}"]`);
+
+    const isEn = document.documentElement.lang === "en";
+
+    // 1. تحديث اللاعب بالملعب (في الخانة رقم 6)
+    pitchPin.dataset.i = targetIndex;
+    const nameText = isEn ? (EN[targetPlayer.img]?.[0] || targetPlayer.name) : targetPlayer.name;
+    pitchPin.dataset.search = nameText;
+
+    const imgEl = pitchPin.querySelector("img");
+    if (imgEl) imgEl.src = `players/${targetPlayer.img}`;
+    const nameEl = pitchPin.querySelector(".name");
+    if (nameEl) nameEl.textContent = nameText;
+
+    // 2. تحديث البديل على دكة البدلاء وتطبيق الأنيميشن (لأنه تغير فعلياً الآن)
+    if (benchSub) {
+        benchSub.dataset.i = benchIndex;
+        const bName = isEn ? (EN[benchPlayer.img]?.[0] || benchPlayer.name) : benchPlayer.name;
+        const bPos = isEn ? (EN[benchPlayer.img]?.[1] || benchPlayer.pos) : benchPlayer.pos;
+        benchSub.dataset.search = bName;
+
+        const bImg = benchSub.querySelector("img");
+        if (bImg) bImg.src = `players/${benchPlayer.img}`;
+        const bStrong = benchSub.querySelector("strong");
+        if (bStrong) bStrong.textContent = bName;
+        const bSmall = benchSub.querySelector("small");
+        if (bSmall) {
+            const numEl = bSmall.querySelector(".num");
+            const ageVal = numEl ? numEl.textContent : "";
+            const yearUnit = isEn ? "yrs" : "سنة";
+            bSmall.innerHTML = `${bPos} • <b class="num">${ageVal}</b> ${yearUnit}`;
+        }
+
+        // تشغيل أنيميشن التبديل لدكة البدلاء فقط عند تغير اللاعب الفعلي
+        benchSub.classList.remove("swap-anim");
+        void benchSub.offsetWidth; // Trigger Reflow
+        benchSub.classList.add("swap-anim");
+    }
+});
