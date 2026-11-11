@@ -1,0 +1,676 @@
+/* ========== Tokens & Reset ========== */
+:root {
+    --red: #CE1126;
+    --red-dark: #a70f20;
+    --wine: #7a0c1a;
+    --green: #007A3D;
+    --soft: #f1f1f1;
+    --nav-h: 64px;
+    --gutter: 40px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--nav-h);
+}
+
+body {
+    font-family: "Changa", sans-serif;
+    background: #fff;
+    color: #000;
+    line-height: 1.6;
+    overflow-x: clip;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+:focus-visible {
+    outline: 3px solid var(--red);
+    outline-offset: 3px;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* ========== Loader ========== */
+#loader {
+    position: fixed;
+    inset: 0;
+    z-index: 30000;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #000, var(--wine));
+    transition: opacity .6s ease, visibility .6s ease;
+}
+
+#loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-logo {
+    width: 160px;
+    animation: pulse 1.6s infinite ease-in-out;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 10px rgba(206, 17, 38, .6));
+    }
+
+    50% {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 30px rgba(206, 17, 38, 1));
+    }
+}
+
+/* ========== Navbar ========== */
+.navbar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: var(--nav-h);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+    background: rgba(255, 255, 255, .88);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
+}
+
+.logo {
+    height: 40px;
+    width: auto;
+}
+
+.socials {
+    display: flex;
+    gap: 8px;
+}
+
+.socials a {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--green);
+    color: var(--soft);
+    font-size: 18px;
+    text-decoration: none;
+    transition: transform .25s, background-color .25s, color .25s;
+}
+
+.socials a:hover {
+    transform: translateY(-3px);
+    background: #fff;
+    color: var(--green);
+    box-shadow: inset 0 0 0 2px var(--green);
+}
+
+.lang-btn {
+    height: 38px;
+    min-width: 42px;
+    padding: 0 12px;
+    border: 2px solid #ddd;
+    border-radius: 999px;
+    background: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color .2s;
+}
+
+.lang-btn:hover {
+    border-color: var(--red);
+}
+
+/* ========== التخطيط: الملعب أقصى اليمين والأقسام بجانبه ========== */
+.layout {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: calc(var(--nav-h) + 20px) var(--gutter) 40px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+@media (min-width: 1001px) {
+    .layout {
+        grid-template-columns: min(700px, 55%) minmax(0, 1fr);
+    }
+
+    .pitch {
+        width: 100%;
+        margin-inline: 0;
+    }
+}
+
+.block {
+    padding: 0 0 28px;
+}
+
+.block h2 {
+    margin-bottom: 14px;
+    padding-inline-start: 12px;
+    border-inline-start: 5px solid var(--red);
+    font-size: 26px;
+    line-height: 1.3;
+}
+
+.block h2 small {
+    color: #777;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.hint {
+    margin-bottom: 16px;
+    color: #666;
+    font-size: 14px;
+}
+
+#empty,
+.empty {
+    margin-top: 14px;
+    font-weight: 600;
+}
+
+#empty:not([hidden]) {
+    animation: pinPop .4s ease backwards;
+}
+
+.search {
+    flex: 1;
+    max-width: 340px;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 42px;
+    padding: 0 16px;
+    border: 2px solid #ddd;
+    border-radius: 999px;
+    background: #fff;
+    color: #666;
+}
+
+.search:focus-within {
+    border-color: var(--red);
+}
+
+.search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    font: inherit;
+    color: #000;
+}
+
+/* ========== الجهاز الفني ========== */
+.staff-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border: 2px solid #eee;
+    border-radius: 16px;
+}
+
+.staff-card img {
+    width: 60px;
+    height: 60px;
+    flex: none;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.staff-card h3 {
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.staff-card p {
+    color: #555;
+    font-size: 14px;
+}
+
+.role {
+    display: inline-block;
+    margin: 2px 0 4px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: var(--red);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* ========== الملعب ========== */
+.pitch-col {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+    align-content: start;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.seg {
+    display: inline-flex;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--soft);
+}
+
+.seg button {
+    padding: 6px 16px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color .25s, color .25s;
+}
+
+.seg button.active {
+    background: var(--red);
+    color: #fff;
+}
+
+.pitch {
+    position: relative;
+    width: min(100%, 700px);
+    aspect-ratio: 3 / 4;
+    margin-inline: auto;
+    overflow: hidden;
+    container-type: inline-size;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+    background: repeating-linear-gradient(to bottom, #0a7a3d 0 9.09%, #0c8844 9.09% 18.18%);
+}
+
+.pitch::before,
+.pitch::after,
+.pitch .center {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border: 2px solid rgba(255, 255, 255, .75);
+}
+
+.pitch::before {
+    inset: 3%;
+    border-radius: 6px;
+}
+
+.pitch::after {
+    left: 50%;
+    bottom: 3%;
+    width: 56%;
+    height: 18%;
+    translate: -50% 0;
+    border-bottom: 0;
+}
+
+.pitch .center {
+    top: 3%;
+    left: 50%;
+    width: 28%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    clip-path: inset(50% 0 0 0);
+}
+
+.pin {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    translate: -50% -50%;
+    display: grid;
+    justify-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: #fff;
+    cursor: pointer;
+    transition: left .75s cubic-bezier(.3, .7, .2, 1), top .75s cubic-bezier(.3, .7, .2, 1), opacity .3s, scale .3s, filter .3s;
+}
+
+.pitch:not(.in) .pin {
+    opacity: 0;
+}
+
+.pitch.in .pin {
+    animation: pinIn .6s cubic-bezier(.2, .8, .2, 1) var(--d, 0ms) backwards;
+}
+
+.face {
+    position: relative;
+    display: block;
+    width: clamp(38px, 13cqw, 92px);
+    aspect-ratio: 1;
+}
+
+.face img,
+.sub img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .4);
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.cap {
+    position: absolute;
+    bottom: -2px;
+    inset-inline-end: -4px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.name {
+    display: block;
+    margin-top: 4px;
+    padding: 1px 6px;
+    max-width: 24cqw;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, .65);
+    font-size: clamp(10px, 2.4cqw, 16px);
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+/* ========== المرمى ========== */
+.pitch .goal {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 26%;
+    height: 3.6%;
+    translate: -50% 0;
+    border: 2px solid #fff;
+    border-bottom: 0;
+    border-radius: 3px 3px 0 0;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, .55) 0 1px, transparent 1px 6px),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .55) 0 1px, transparent 1px 6px),
+        rgba(0, 0, 0, .2);
+}
+
+/* ========== دكة البدلاء ========== */
+.bench-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+}
+
+.sub {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 16px;
+    border: 2px solid #eee;
+    border-radius: 14px;
+    background: #fff;
+    font: inherit;
+    color: #000;
+    text-align: start;
+    cursor: pointer;
+    transition: border-color .2s, opacity .3s, scale .3s, filter .3s, translate .25s, box-shadow .25s;
+}
+
+.sub:hover {
+    border-color: var(--red);
+    translate: 0 -3px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .1);
+}
+
+.sub img {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-width: 2px;
+}
+
+.sub strong {
+    display: block;
+    font-size: 16px;
+    line-height: 1.3;
+}
+
+.sub small {
+    color: #666;
+}
+
+/* ========== حالة البحث ========== */
+.pl.dim {
+    opacity: .2;
+    scale: .85;
+    filter: grayscale(1);
+}
+
+.pl.match .face img {
+    border-color: var(--red);
+    box-shadow: 0 0 0 4px rgba(206, 17, 38, .5);
+}
+
+.pl.match.sub {
+    border-color: var(--red);
+}
+
+@media (hover: hover) {
+    .pin:hover .face img {
+        border-color: var(--red);
+    }
+}
+
+.pitch .pin.pop,
+.bench .sub.pop {
+    animation: pinPop .5s cubic-bezier(.2, .8, .2, 1) var(--d, 0ms) backwards;
+}
+
+@keyframes pinIn {
+    from {
+        opacity: 0;
+        translate: -50% -140%;
+        scale: .6;
+    }
+}
+
+@keyframes pinPop {
+    0% {
+        opacity: 0;
+        scale: .6;
+    }
+
+    60% {
+        scale: 1.12;
+    }
+}
+
+/* ========== نافذة التفاصيل ========== */
+.dlg {
+    margin: auto;
+    width: min(92vw, 360px);
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 20px;
+    font-family: inherit;
+    color: #000;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+}
+
+.dlg[open] {
+    animation: dlgIn .35s cubic-bezier(.2, .8, .2, 1);
+}
+
+.dlg::backdrop {
+    background: rgba(0, 0, 0, .6);
+    backdrop-filter: blur(3px);
+}
+
+#dialogBody>img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+.d-info {
+    padding: 16px 20px 20px;
+}
+
+.d-info h3 {
+    font-size: 22px;
+}
+
+.d-info dl {
+    display: grid;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.d-info dl div {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #eee;
+}
+
+.d-info dt {
+    color: #666;
+}
+
+.d-info dd {
+    font-weight: 700;
+}
+
+.badge {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: var(--red-dark);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    inset-inline-start: 10px;
+    z-index: 1;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .6);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+@keyframes dlgIn {
+    from {
+        opacity: 0;
+        translate: 0 20px;
+        scale: .94;
+    }
+}
+
+/* إغلاق النافذة بحركة */
+.dlg[open]::backdrop {
+    animation: fadeIn .3s ease;
+}
+
+.dlg.closing {
+    animation: dlgOut .22s ease forwards;
+}
+
+.dlg.closing::backdrop {
+    animation: fadeOut .22s ease forwards;
+}
+
+@keyframes dlgOut {
+    to {
+        opacity: 0;
+        translate: 0 16px;
+        scale: .94;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+/* مقولة المدرب في نهاية بطاقته */
+.d-quote {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fdf1f2;
+    color: var(--red-dark);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: center;
+    animation: riseIn .5s cubic-bezier(.2, .8, .2)
+}
