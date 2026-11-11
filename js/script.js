@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const translations = {
         ar: {
             searchLabel: "ابحث عن لاعب",
-            ph: "ابحث عن لاعب أو نادٍ...",
+            ph: "ابحث عن لاعب...",
             langAria: "التبديل إلى الإنجليزية",
             pitchLabel: "تشكيل المنتخب",
             family: "العائلة الهاشمية",
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!translated) return player[field] || "";
         return field === "name" ? translated[0] :
             field === "pos" ? translated[1] :
-            field === "club" ? translated[2] : player[field] || "";
+                field === "club" ? translated[2] : player[field] || "";
     };
 
     const staffText = (member, field) => {
@@ -125,8 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const player = SQUAD[playerIndex];
         if (!player) return ""; // الحماية في حال عدم وجود لاعب مخصص للخانة
         const xy = coords[slot] || [50, 50];
-        const searchable = `${playerText(player, "name")} ${playerText(player, "pos")} ${playerText(player, "club")}`;
-
+        const searchable = playerText(player, "name");
         return `
             <button type="button" class="pl pin" data-slot="${slot}" data-i="${playerIndex}" data-search="${escapeHTML(searchable)}"
                 style="--x:${xy[0]}%;--y:${xy[1]}%;--d:${slot * 45}ms"
@@ -155,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pitch.innerHTML =
             '<span class="center" aria-hidden="true"></span><span class="goal" aria-hidden="true"></span>' +
             lineup.map((playerIndex, slot) => positionMarkup(slot, playerIndex, coords)).join("");
-        
+
         if (animate && !reduced) {
             pitch.classList.remove("in");
             requestAnimationFrame(() => pitch.classList.add("in"));
@@ -286,6 +285,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const next = button.dataset.f;
             if (!formations[next] || next === currentFormation) return;
             currentFormation = next;
+
+            // --- الأسطر الثلاثة الجديدة لتحريك الخلفية الحمراء ---
+            const seg = button.closest(".seg");
+            const index = [...seg.querySelectorAll("button")].indexOf(button);
+            seg.style.setProperty("--idx", index);
+            // ----------------------------------------------------
+
             $$(".seg button").forEach(item => item.classList.toggle("active", item === button));
             const coords = currentCoords();
             $$(".pin", pitch).forEach((pin, slot) => {
@@ -331,17 +337,9 @@ document.addEventListener("DOMContentLoaded", () => {
         language = language === "ar" ? "en" : "ar";
         updateStaticLanguage();
     });
-
-    const toTop = $("#backToTop");
-    let ticking = false;
-    window.addEventListener("scroll", () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-            ticking = false;
-            toTop.classList.toggle("active", window.scrollY > 400);
-        });
-    }, { passive: true });
-
     updateStaticLanguage();
+
+    // تحديث سنة حقوق النشر تلقائياً
+    const yearEl = $("#currentYear");
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
 });
