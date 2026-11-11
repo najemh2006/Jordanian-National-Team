@@ -286,31 +286,63 @@ img {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 10px;
 }
 
+/* ========== أدوات الملعب: التشكيلات ========== */
 .seg {
+    position: relative;
     display: inline-flex;
     padding: 4px;
     border-radius: 999px;
     background: var(--soft);
+    z-index: 1; /* لعزل الطبقات */
+    isolation: isolate;
+}
+
+/* الخلفية الحمراء المتحركة (المؤشر) */
+.seg::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    width: calc((100% - 8px) / 3); /* العرض هو ثلث الشريط */
+    background: var(--red);
+    border-radius: 999px;
+    z-index: -1; /* لتبقى خلف النص */
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* اتجاه الحركة للغة العربية (RTL) */
+html[dir="rtl"] .seg::before {
+    right: 4px;
+    transform: translateX(calc(var(--idx, 0) * -100%));
+}
+
+/* اتجاه الحركة للغة الإنجليزية (LTR) */
+html[dir="ltr"] .seg::before {
+    left: 4px;
+    transform: translateX(calc(var(--idx, 0) * 100%));
 }
 
 .seg button {
+    flex: 1; 
+    text-align: center;
     padding: 6px 16px;
     border: 0;
     border-radius: 999px;
-    background: none;
+    background: transparent !important; 
+    color: #444;
     font: inherit;
     font-weight: 700;
     cursor: pointer;
-    transition: background-color .25s, color .25s;
+    transition: color 0.3s ease;
+    white-space: nowrap; /* هذا هو السطر الجديد الذي يمنع النص من الانقسام */
 }
 
 .seg button.active {
-    background: var(--red);
-    color: #fff;
+    color: #fff; /* تغيير لون النص فقط عند التفعيل */
 }
 
 .pitch {
@@ -620,6 +652,25 @@ img {
     cursor: pointer;
 }
 
+/* ========== أنيميشن تبديل دكة البدلاء ========== */
+.sub.swap-anim {
+    animation: subSwap 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes subSwap {
+    0% {
+        opacity: 0.2;
+        transform: scale(0.85) translateY(8px);
+    }
+    60% {
+        transform: scale(1.05) translateY(-2px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
 @keyframes dlgIn {
     from {
         opacity: 0;
@@ -673,4 +724,16 @@ img {
     line-height: 1.5;
     text-align: center;
     animation: riseIn .5s cubic-bezier(.2, .8, .2)
+}
+
+/* ========== حقوق النشر ========== */
+.site-footer {
+    text-align: center;
+    padding: 24px 20px;
+    margin-top: 40px;
+    border-top: 2px solid #eee;
+    color: #666;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
 }
