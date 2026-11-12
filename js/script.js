@@ -110,14 +110,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return member[field] || "";
     };
 
-    const currentCoords = () => formations[currentFormation] || formations["4-3-3"];
+    const currentCoords = () => (formations[currentFormation] || formations["4-3-3"]).coords;
 
-    const initialLineup = () => {
-        lineup = Array(11).fill(null);
-        SQUAD.forEach((player, index) => {
-            if (Number.isInteger(player.xi) && player.xi >= 0 && player.xi < 11) {
-                lineup[player.xi] = index;
-            }
+    const buildLineup = () => {
+        const formation = formations[currentFormation] || formations["4-3-3"];
+        lineup = formation.players.map(img => {
+            const index = SQUAD.findIndex(player => player.img === img);
+            if (index === -1) console.warn("لاعب غير موجود في SQUAD:", img);
+            return index;
         });
     };
 
@@ -155,12 +155,39 @@ document.addEventListener("DOMContentLoaded", () => {
             '<span class="center" aria-hidden="true"></span><span class="goal" aria-hidden="true"></span>' +
             lineup.map((playerIndex, slot) => positionMarkup(slot, playerIndex, coords)).join("");
 
+        pitch.classList.add("in");
         if (animate && !reduced) {
-            pitch.classList.remove("in");
-            requestAnimationFrame(() => pitch.classList.add("in"));
-        } else {
-            pitch.classList.add("in");
+            pitch.classList.add("intro");
+            setTimeout(() => pitch.classList.remove("intro"), 900);
         }
+        applySearch();
+    };
+
+    const updatePitch = () => {
+        const coords = currentCoords();
+        const wanted = new Map();
+        lineup.forEach((playerIndex, slot) => { if (playerIndex >= 0) wanted.set(playerIndex, slot); });
+
+        $$(".pin", pitch).forEach(pin => {
+            if (wanted.has(Number(pin.dataset.i))) return;
+            pin.classList.add("leaving");
+            setTimeout(() => pin.remove(), reduced ? 0 : 350);
+        });
+
+        wanted.forEach((slot, playerIndex) => {
+            const pin = pitch.querySelector(`.pin[data-i="${playerIndex}"]:not(.leaving)`);
+            const [x, y] = coords[slot];
+            if (pin) {
+                pin.dataset.slot = slot;
+                pin.style.setProperty("--x", `${x}%`);
+                pin.style.setProperty("--y", `${y}%`);
+            } else {
+                pitch.insertAdjacentHTML("beforeend", positionMarkup(slot, playerIndex, coords));
+                const created = pitch.lastElementChild;
+                created.classList.add("pop");
+                created.addEventListener("animationend", () => created.classList.remove("pop"), { once: true });
+            }
+        });
         applySearch();
     };
 
@@ -207,11 +234,20 @@ document.addEventListener("DOMContentLoaded", () => {
         $$("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
         $$("[data-i18n-alt]").forEach(el => el.alt = t(el.dataset.i18nAlt));
         $("#empty").textContent = t("empty");
-        langBtn.textContent = language === "ar" ? "EN" : "ع";
+       langBtn.textContent = language === "ar" ? "EN" : "ع";
         langBtn.setAttribute("aria-label", t("langAria"));
         document.title = language === "ar" ? "النشامى - المنتخب الأردني" : "Al-Nashama - Jordan National Team";
         searchEl.value = searchEl.value;
-        renderPitch();
+
+        $$(".pin", pitch).forEach(pin => {
+            const player = SQUAD[Number(pin.dataset.i)];
+            if (!player) return;
+            const name = playerText(player, "name");
+            pin.dataset.search = name;
+            pin.setAttribute("aria-label", `${name}, ${playerText(player, "pos")}`);
+            pin.querySelector(".name").textContent = name;
+        });
+
         renderBench();
         renderStaff();
     };
@@ -258,24 +294,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }, reduced ? 0 : 230);
     };
 
-    // Loader
-    const loader = $("#loader");
-    const startedAt = performance.now();
-    document.body.style.overflow = "hidden";
-    const hideLoader = () => {
-        const delay = Math.max(0, 500 - (performance.now() - startedAt));
-        setTimeout(() => {
-            loader?.classList.add("hidden");
-            document.body.classList.add("ready");
-            document.body.style.overflow = "";
-            setTimeout(() => loader?.remove(), 800);
-        }, delay);
-    };
-    if (document.readyState === "complete") hideLoader();
-    else window.addEventListener("load", hideLoader, { once: true });
-
-    initialLineup();
-    renderPitch();
+    buildLineup();
+    renderPitch(true);
     renderBench();
     renderStaff();
 
@@ -286,18 +306,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!formations[next] || next === currentFormation) return;
             currentFormation = next;
 
-            // --- الأسطر الثلاثة الجديدة لتحريك الخلفية الحمراء ---
             const seg = button.closest(".seg");
-            const index = [...seg.querySelectorAll("button")].indexOf(button);
-            seg.style.setProperty("--idx", index);
-            // ----------------------------------------------------
-
+            seg.style.setProperty("--idx", [...seg.querySelectorAll("button")].indexOf(button));
             $$(".seg button").forEach(item => item.classList.toggle("active", item === button));
-            const coords = currentCoords();
-            $$(".pin", pitch).forEach((pin, slot) => {
-                pin.style.setProperty("--x", `${coords[slot][0]}%`);
-                pin.style.setProperty("--y", `${coords[slot][1]}%`);
-            });
+
+            buildLineup();
+            updatePitch();
+            renderBench();
             pitch.dataset.formation = next;
         });
     });
