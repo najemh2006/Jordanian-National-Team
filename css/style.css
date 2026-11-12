@@ -47,41 +47,6 @@ img {
     white-space: nowrap;
 }
 
-/* ========== Loader ========== */
-#loader {
-    position: fixed;
-    inset: 0;
-    z-index: 30000;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, #000, var(--wine));
-    transition: opacity .6s ease, visibility .6s ease;
-}
-
-#loader.hidden {
-    opacity: 0;
-    visibility: hidden;
-}
-
-.loader-logo {
-    width: 160px;
-    animation: pulse 1.6s infinite ease-in-out;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-        filter: drop-shadow(0 0 10px rgba(206, 17, 38, .6));
-    }
-
-    50% {
-        transform: scale(1.15);
-        filter: drop-shadow(0 0 30px rgba(206, 17, 38, 1));
-    }
-}
-
 /* ========== Navbar ========== */
 .navbar {
     position: fixed;
@@ -121,10 +86,10 @@ img {
 }
 
 .socials a:hover {
-    transform: translateY(-3px);
     background: #fff;
     color: var(--green);
     box-shadow: inset 0 0 0 2px var(--green);
+    transition: 0.3s;
 }
 
 .lang-btn {
@@ -406,11 +371,13 @@ html[dir="ltr"] .seg::before {
     transition: left .75s cubic-bezier(.3, .7, .2, 1), top .75s cubic-bezier(.3, .7, .2, 1), opacity .3s, scale .3s, filter .3s;
 }
 
+.pin.leaving { opacity: 0; scale: .6; pointer-events: none; }
+
 .pitch:not(.in) .pin {
     opacity: 0;
 }
 
-.pitch.in .pin {
+.pitch.intro .pin {
     animation: pinIn .6s cubic-bezier(.2, .8, .2, 1) var(--d, 0ms) backwards;
 }
 
@@ -650,25 +617,6 @@ html[dir="ltr"] .seg::before {
     color: #fff;
     font-size: 16px;
     cursor: pointer;
-}
-
-/* ========== أنيميشن تبديل دكة البدلاء ========== */
-.sub.swap-anim {
-    animation: subSwap 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-@keyframes subSwap {
-    0% {
-        opacity: 0.2;
-        transform: scale(0.85) translateY(8px);
-    }
-    60% {
-        transform: scale(1.05) translateY(-2px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
 }
 
 @keyframes dlgIn {
